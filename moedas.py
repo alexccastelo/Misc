@@ -1,11 +1,17 @@
 from flask import Flask, render_template, request, jsonify
 import requests
-from datetime import datetime
+from babel import Locale
+from babel.dates import format_date, format_datetime, format_time
+from babel.numbers import format_currency
 import pytz
-import locale
+from datetime import datetime
 
+locale = "pt_BR"
+# Configura o fuso horário para UTC-3 para o horário de Brasília
+fuso_horario = pytz.timezone("America/Sao_Paulo")
+# Configura o formato de data e hora
+data_hora_atual = datetime.now(fuso_horario).strftime("%d-%m-%Y / %H:%M:%S")
 
-locale.setlocale(locale.LC_ALL, "pt_BR.UTF-8")
 
 app = Flask(__name__)
 
@@ -15,9 +21,9 @@ BASE_URL = "https://economia.awesomeapi.com.br/last/"
 @app.route("/", methods=["GET", "POST"])
 def index():
     moedas = [
-        "USD-BRL",
-        "EUR-BRL",
-        "BTC-BRL",
+        "USD>BRL",
+        "EUR>BRL",
+        "BTC>BRL",
     ]  # Atualize esta lista com as moedas do seu arquivo XML
     if request.method == "POST":
         moeda = request.form.get("moeda")
@@ -27,17 +33,16 @@ def index():
             moeda_origem, moeda_destino = moeda.split("-")
             taxa = data[f"{moeda_origem}{moeda_destino}"]["bid"]
             # Formata a taxa com quatro casas decimais para o padrão de moeda
-            if "BRL" in moeda_destino:
-                simbolo_moeda = "R$"
-            else:
-                simbolo_moeda = ""  # Você pode expandir esta lógica para outras moedas
+            #if "BRL" in moeda_destino:
+            #    simbolo_moeda = "r$"
+            #else:
+            #    simbolo_moeda = ""  # Você pode expandir esta lógica para outras moedas
             taxa = float(taxa)  # Garante que a taxa seja um número real
-            taxa_formatada = locale.format_string("%.4f", taxa, grouping=True)
-            taxa_formatada = simbolo_moeda + taxa_formatada.replace(".", ",").replace(
+            taxa_formatada = format_currency(taxa, 'BRL', locale=locale)
+            taxa_formatada = taxa_formatada.replace(".", ",").replace(
                 ",", ".", 1
             )
-            # Configura o fuso horário para UTC-3
-            fuso_horario = pytz.timezone("America/Sao_Paulo")
+
             data_hora_atual = datetime.now(fuso_horario).strftime("%d-%m-%Y / %H:%M:%S")
             return render_template(
                 "index.html",
