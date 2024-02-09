@@ -21,12 +21,11 @@ BASE_URL = "https://economia.awesomeapi.com.br/last/"
 @app.route("/", methods=["GET", "POST"])
 def index():
     moedas = [
-        "USD>BRL",
-        "EUR>BRL",
-        "BTC>BRL",
-        "GBP>BRL",
-        "ARS>BRL",
-        "CNY>BRL",
+        "USD-BRL",
+        "EUR-BRL",
+        "BTC-BRL",
+        "CNY-BRL",
+        "ARS-BRL",
     ]  # Atualize esta lista com as moedas do seu arquivo XML
     if request.method == "POST":
         moeda = request.form.get("moeda")
