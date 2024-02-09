@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cotação de Moedas</title>
+    <script>
+        function iniciarContador() {
+            var contador = 60;
+            var interval = setInterval(function() {
+                document.getElementById('contador').textContent = contador + ' segundos restantes';
+                contador--;
+                if (contador < 0) {
+                    clearInterval(interval);
+                    document.getElementById('form-cotacao').submit();
+                }
+            }, 1000);
+        }
+    </script>
+</head>
+<body>
+    <h1>Pesquisar Cotação de Moedas</h1>
+    <form id="form-cotacao" action="/" method="post">
+        <label for="moeda">Selecione a Moeda:</label>
+        <select name="moeda" id="moeda">
+            {% for moeda in moedas %}
+                <option value="{{ moeda }}">{{ moeda }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Pesquisar</button>
+    </form>
+    {% if taxa %}
+        <p>Cotação: {{ moeda }} = {{ taxa }}</p>
+        <p>Data e Hora da Cotação: {{ data_hora_atual }}</p>
+        <p id="contador"></p>
+        <script>iniciarContador();</script>
+    {% endif %}
+</body>
+</html>
